@@ -1,0 +1,59 @@
+# === Node / React ===
+node_modules/
+build/
+dist/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# === Python / Flask ===
+*.pyc
+__pycache__/
+instance/
+.env
+.venv/
+venv/
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Flask cache
+*.pyo
+*.pyd
+*.pdb
+
+# === OS Specific ===
+.DS_Store
+Thumbs.db
+
+# === VS Code ===
+.vscode/
+
+# === Heroku build artifacts ===
+*.log
+*.sqlite3
+
+# === Testing ===
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+.jest/
+
+# === Database dumps ===
+*.sql
+*.db
+
+# === CI/CD ===
+.github/token.txt
+.secrets/
+
+# === Local config ===
+*.local
+*.dev
+*.bak
+*.swp
