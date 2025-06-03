@@ -7,8 +7,10 @@ def create_app(testing=False):
     @app.route('/')
     @app.route('/<path:path>')
     def serve_react(path=''):
-        if path and os.path.exists(os.path.join(app.static_folder, path)):
-            return send_from_directory(app.static_folder, path)
+        if path:
+            normalized_path = os.path.normpath(os.path.join(app.static_folder, path))
+            if normalized_path.startswith(app.static_folder) and os.path.exists(normalized_path):
+                return send_from_directory(app.static_folder, path)
         return send_from_directory(app.static_folder, 'index.html')
 
     @app.route('/api/health')
