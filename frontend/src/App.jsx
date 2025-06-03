@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import LocationDetector from './LocationDetector';
-import TransitSystemSelector from './TransitSystemSelector';
+import LocationDetector from './LocationDetector.jsx';
+import TransitSystemSelector from './TransitSystemSelector.jsx';
 
 const SUPPORTED_SYSTEMS = [
   { name: 'GO Transit', region: { lat: 43.65, lon: -79.38, radius: 0.5 } }, // Toronto
