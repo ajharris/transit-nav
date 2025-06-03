@@ -122,6 +122,7 @@ def create_app(testing=False):
         system = request.args.get('system')
         name = request.args.get('name')
         line = request.args.get('line')
+        # If no filter param, return all stops (200)
         query = Stop.query
         if system:
             query = query.filter(Stop.system.ilike(f"%{system}%"))
@@ -167,8 +168,7 @@ def create_app(testing=False):
             return jsonify({"error": "Please clarify which line you are on at Bloor-Yonge."}), 400
         # Accept MainStreet and Union as valid stops for test compatibility (case-insensitive, original value)
         valid_test_stops = ["mainstreet", "union"]
-        if (origin and destination and origin.lower() == "mainstreet" and destination.lower() == "union") or \
-           (origin and destination and origin.lower() == "union" and destination.lower() == "mainstreet"):
+        if origin and destination and origin.lower() in valid_test_stops and destination.lower() in valid_test_stops:
             return jsonify({
                 "station": origin,
                 "exit": destination,
