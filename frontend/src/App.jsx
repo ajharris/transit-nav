@@ -37,6 +37,10 @@ function Home() {
     setRecentTrips(getRecentTrips());
   }, []);
 
+  // Proxy API requests to backend on port 5000
+  // Vite config: add this to vite.config.js
+  // server: { proxy: { '/api': 'http://localhost:5000' } }
+
   const handleDetect = ({ latitude, longitude }) => {
     const sys = getSystemForCoords(latitude, longitude);
     if (sys) setSystem(sys);
@@ -77,6 +81,7 @@ function Home() {
             setDestination(null);
           }}>Change System</button></div>
           <StopSelector
+            key={system} // force remount on system change
             system={system}
             origin={origin}
             setOrigin={setOrigin}
