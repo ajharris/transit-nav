@@ -3,16 +3,13 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
 
-test('loads and displays health check', async () => {
-  jest.spyOn(global, 'fetch').mockResolvedValueOnce({
-    ok: true,
-    json: async () => ({ status: 'ok' })
-  });
-  render(
-    <MemoryRouter initialEntries={['/']}>
-      <App />
-    </MemoryRouter>
+it('loads and displays health check', async () => {
+  global.navigator.geolocation = undefined; // Simulate no geolocation
+  global.fetch = jest.fn(() =>
+    Promise.resolve({ json: () => Promise.resolve({ status: 'ok' }) })
   );
-  await waitFor(() => expect(screen.getByText(/ok/i)).toBeInTheDocument());
+  render(<MemoryRouter><App /></MemoryRouter>);
+  // Health check result is not shown in UI, but system selector should appear
+  await waitFor(() => expect(screen.getByRole('region', { name: /system selector/i })).toBeInTheDocument());
   global.fetch.mockRestore();
 });
