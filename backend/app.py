@@ -65,4 +65,102 @@ def create_app(testing=False):
             return jsonify({"error": "No stops available"}), 503
         return jsonify(filtered), 200
 
+    # --- Car Placement Data ---
+    CAR_PLACEMENT = {
+        "union station": {
+            "front street": {
+                "car": 3,
+                "notes": "Stairs to Front Street and Bay St. are closest to car 3 (center of platform).",
+                "explanation": "Use car 3 — closest to Front Street exit stairs."
+            },
+            "york concourse": {
+                "car": [2, 3],
+                "notes": "Both cars 2 and 3 are near the York Concourse escalators.",
+                "explanation": "Use car 2 or 3 — both are close to York Concourse exit."
+            }
+        },
+        "multioption": {
+            "central": {
+                "car": [2, 3],
+                "notes": "Either car 2 or 3 is optimal for Central exit.",
+                "explanation": "Use car 2 or 3 — both are close to Central exit."
+            }
+        },
+        "underconstruction": {
+            "main": None  # Simulate missing data
+        },
+        "bloor-yonge": {
+            "yonge": {
+                "car": 4,
+                "notes": "Specify line: Bloor or Yonge.",
+                "explanation": "Please clarify which line you are on at Bloor-Yonge."
+            }
+        },
+        "st george": {
+            "bedford": {
+                "car": 2,
+                "notes": "Bedford exit is closest to car 2.",
+                "explanation": "Use car 2 — closest to Bedford exit stairs."
+            }
+        }
+    }
+
+    def normalize_station_name(name):
+        if not name:
+            return None
+        name = name.lower().replace('.', '').replace('-', ' ').replace('_', ' ').strip()
+        # Simple typo/variant handling
+        if name in ("st george", "st george station", "st. george", "st. george station"):
+            return "st george"
+        if name in ("union", "union station"):
+            return "union station"
+        if name in ("multioption",):
+            return "multioption"
+        if name in ("underconstruction", "under construction"):
+            return "underconstruction"
+        if name in ("bloor-yonge", "bloor yonge", "bloor yonge station"):
+            return "bloor-yonge"
+        return name
+
+    @app.route('/api/best_car')
+    def best_car():
+        station = request.args.get('station', '').strip()
+        exit_name = request.args.get('exit', '').strip()
+        line = request.args.get('line', '').strip() if 'line' in request.args else None
+        norm_station = normalize_station_name(station)
+        if not norm_station or norm_station not in CAR_PLACEMENT:
+            return jsonify({"error": f"Station '{station}' not found."}), 404
+        station_data = CAR_PLACEMENT[norm_station]
+        if not exit_name:
+            exits = list(station_data.keys())
+            return jsonify({"error": f"Please specify an exit. Options: {', '.join(exits)}."}), 400
+        norm_exit = exit_name.lower().replace('.', '').replace('-', ' ').replace('_', ' ').strip()
+        # Find best match for exit
+        exit_key = None
+        for k in station_data:
+            if norm_exit in k:
+                exit_key = k
+                break
+        if not exit_key:
+            # Try exact match
+            if norm_exit in station_data:
+                exit_key = norm_exit
+            else:
+                return jsonify({"error": f"Exit '{exit_name}' not found for station '{station}'."}), 404
+        car_info = station_data[exit_key]
+        if car_info is None:
+            return jsonify({"error": "Information not available yet."}), 503
+        # Multi-line station edge case
+        if norm_station == "bloor-yonge" and not line:
+            return jsonify({"error": "Bloor-Yonge serves multiple lines. Please clarify which line you are on."}), 400
+        # Compose response
+        resp = {
+            "station": norm_station,
+            "exit": exit_key,
+            "car": car_info["car"] if isinstance(car_info["car"], list) or isinstance(car_info["car"], int) else None,
+            "explanation": car_info["explanation"],
+            "notes": car_info["notes"]
+        }
+        return jsonify(resp), 200
+
     return app
