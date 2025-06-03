@@ -1,10 +1,27 @@
 # tests/test_stops_api.py
 import pytest
 from app import create_app
+from models import db, Stop
 
 @pytest.fixture
-def client():
+def app():
     app = create_app(testing=True)
+    with app.app_context():
+        db.create_all()
+        # Seed with sample stops for API tests
+        db.session.add_all([
+            Stop(name="Union Station", line="GO", system="GO Transit", lat=43.645, lon=-79.380),
+            Stop(name="Kipling", line="TTC", system="TTC", lat=43.636, lon=-79.535),
+            Stop(name="Yorkdale", line="TTC", system="TTC", lat=43.724, lon=-79.454),
+            Stop(name="Oakville", line="GO", system="GO Transit", lat=43.450, lon=-79.682),
+        ])
+        db.session.commit()
+        yield app
+        db.session.remove()
+        db.drop_all()
+
+@pytest.fixture
+def client(app):
     return app.test_client()
 
 def test_stops_list(client):

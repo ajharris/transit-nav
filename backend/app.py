@@ -1,8 +1,70 @@
 from flask import Flask, send_from_directory, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from models import db, Stop
 import os
+
+# --- Car Placement Data ---
+CAR_PLACEMENT = {
+    "union station": {
+        "front street": {
+            "car": 3,
+            "notes": "Stairs to Front Street and Bay St. are closest to car 3 (center of platform).",
+            "explanation": "Use car 3 — closest to Front Street exit stairs."
+        },
+        "york concourse": {
+            "car": [2, 3],
+            "notes": "Both cars 2 and 3 are near the York Concourse escalators.",
+            "explanation": "Use car 2 or 3 — both are close to York Concourse exit."
+        }
+    },
+    "multioption": {
+        "central": {
+            "car": [2, 3],
+            "notes": "Either car 2 or 3 is optimal for Central exit.",
+            "explanation": "Use car 2 or 3 — both are close to Central exit."
+        }
+    },
+    "underconstruction": {
+        "main": None  # Simulate missing data
+    },
+    "bloor-yonge": {
+        "yonge": {
+            "car": 4,
+            "notes": "Specify line: Bloor or Yonge.",
+            "explanation": "Please clarify which line you are on at Bloor-Yonge."
+        }
+    },
+    "st george": {
+        "bedford": {
+            "car": 2,
+            "notes": "Bedford exit is closest to car 2.",
+            "explanation": "Use car 2 — closest to Bedford exit stairs."
+        }
+    }
+}
+
+def scrape_stops_for_system(system_name):
+    """
+    Placeholder for web scraping logic. In production, this would fetch and parse stops from the web.
+    For testing, this can be mocked.
+    """
+    # Example: return a list of stops for TTC
+    if system_name == "TTC":
+        return [
+            {"name": "Kipling", "line": "TTC", "system": "TTC"},
+            {"name": "Yorkdale", "line": "TTC", "system": "TTC"},
+            {"name": "Union Station", "line": "GO", "system": "GO Transit"},
+            {"name": "Bloor-Yonge", "line": "TTC", "system": "TTC"},
+        ]
+    return []
 
 def create_app(testing=False):
     app = Flask(__name__, static_folder='../frontend/build', static_url_path='')
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///transitnav.db' if not testing else 'sqlite:///:memory:'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db.init_app(app)
+    with app.app_context():
+        db.create_all()
 
     @app.route('/')
     @app.route('/<path:path>')
@@ -46,64 +108,18 @@ def create_app(testing=False):
 
     @app.route('/api/stops')
     def stops():
-        # Example static stop list for MVP
-        stops = [
-            {"id": "union", "name": "Union Station", "location": {"lat": 43.645, "lon": -79.380}, "line": "GO"},
-            {"id": "kipling", "name": "Kipling", "location": {"lat": 43.636, "lon": -79.535}, "line": "TTC"},
-            {"id": "yorkdale", "name": "Yorkdale", "location": {"lat": 43.724, "lon": -79.454}, "line": "TTC"},
-            {"id": "oakville", "name": "Oakville", "location": {"lat": 43.450, "lon": -79.682}, "line": "GO"},
-        ]
-        # Optional: filter by name or line
         name = request.args.get('name')
         line = request.args.get('line')
-        filtered = stops
+        system = request.args.get('system')
+        query = Stop.query
         if name:
-            filtered = [s for s in filtered if name.lower() in s['name'].lower()]
+            query = query.filter(Stop.name.ilike(f"%{name}%"))
         if line:
-            filtered = [s for s in filtered if s['line'].lower() == line.lower()]
-        if not stops:
-            return jsonify({"error": "No stops available"}), 503
-        return jsonify(filtered), 200
-
-    # --- Car Placement Data ---
-    CAR_PLACEMENT = {
-        "union station": {
-            "front street": {
-                "car": 3,
-                "notes": "Stairs to Front Street and Bay St. are closest to car 3 (center of platform).",
-                "explanation": "Use car 3 — closest to Front Street exit stairs."
-            },
-            "york concourse": {
-                "car": [2, 3],
-                "notes": "Both cars 2 and 3 are near the York Concourse escalators.",
-                "explanation": "Use car 2 or 3 — both are close to York Concourse exit."
-            }
-        },
-        "multioption": {
-            "central": {
-                "car": [2, 3],
-                "notes": "Either car 2 or 3 is optimal for Central exit.",
-                "explanation": "Use car 2 or 3 — both are close to Central exit."
-            }
-        },
-        "underconstruction": {
-            "main": None  # Simulate missing data
-        },
-        "bloor-yonge": {
-            "yonge": {
-                "car": 4,
-                "notes": "Specify line: Bloor or Yonge.",
-                "explanation": "Please clarify which line you are on at Bloor-Yonge."
-            }
-        },
-        "st george": {
-            "bedford": {
-                "car": 2,
-                "notes": "Bedford exit is closest to car 2.",
-                "explanation": "Use car 2 — closest to Bedford exit stairs."
-            }
-        }
-    }
+            query = query.filter(Stop.line.ilike(f"%{line}%"))
+        if system:
+            query = query.filter(Stop.system.ilike(f"%{system}%"))
+        stops = query.all()
+        return jsonify([stop.to_dict() for stop in stops]), 200
 
     def normalize_station_name(name):
         if not name:
