@@ -1,0 +1,8 @@
+{
+    "name": "Transit Nav DevContainer",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "postCreateCommand": "pip install --upgrade pip && pip install -r /workspaces/transit-nav/requirements.txt && cd /workspaces/transit-nav/frontend && npm install",
+    "workspaceFolder": "/workspaces/transit-nav"
+}
