@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const SUPPORTED_SYSTEMS = [
   { name: 'GO Transit' },
@@ -8,18 +8,64 @@ const SUPPORTED_SYSTEMS = [
 ];
 
 function TransitSystemSelector({ onSelect }) {
+  const [query, setQuery] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const filtered = query
+    ? SUPPORTED_SYSTEMS.filter(sys => sys.name.toLowerCase().includes(query.toLowerCase()))
+    : SUPPORTED_SYSTEMS;
+
   return (
-    <div role="region" aria-label="System selector">
+    <div role="region" aria-label="System selector" style={{ position: 'relative', maxWidth: 320 }}>
       <h2 id="system-select-label">Select your transit system</h2>
-      <ul aria-labelledby="system-select-label">
-        {SUPPORTED_SYSTEMS.map(sys => (
-          <li key={sys.name}>
-            <button onClick={() => onSelect(sys.name)} aria-label={sys.name}>
-              {sys.name}
-            </button>
-          </li>
-        ))}
-      </ul>
+      <div style={{ position: 'relative' }}>
+        <input
+          type="text"
+          placeholder="Type or select a system"
+          value={query}
+          onChange={e => {
+            setQuery(e.target.value);
+            setDropdownOpen(true);
+          }}
+          onFocus={() => setDropdownOpen(true)}
+          aria-label="Transit system search"
+          style={{ width: '100%', padding: 8, marginBottom: 4 }}
+          autoComplete="off"
+        />
+        {dropdownOpen && (
+          <ul style={{ border: '1px solid #ccc', background: 'white', position: 'absolute', width: '100%', zIndex: 2, maxHeight: 150, overflowY: 'auto', margin: 0, padding: 0, listStyle: 'none' }}>
+            {filtered.length > 0 ? (
+              filtered.map(sys => (
+                <li key={sys.name}>
+                  <button
+                    type="button"
+                    style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: 8 }}
+                    onClick={() => {
+                      onSelect(sys.name);
+                      setQuery(sys.name);
+                      setDropdownOpen(false);
+                    }}
+                  >
+                    {sys.name}
+                  </button>
+                </li>
+              ))
+            ) : (
+              <li style={{ padding: 8, color: '#888' }}>
+                <button
+                  type="button"
+                  style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', color: '#888' }}
+                  onClick={() => {
+                    onSelect(query);
+                    setDropdownOpen(false);
+                  }}
+                >
+                  Add "{query}" (not yet supported)
+                </button>
+              </li>
+            )}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

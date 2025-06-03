@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import LocationDetector from './LocationDetector.jsx';
 import TransitSystemSelector from './TransitSystemSelector.jsx';
+import StopSelector from './StopSelector.jsx';
 
 const SUPPORTED_SYSTEMS = [
   { name: 'GO Transit', region: { lat: 43.65, lon: -79.38, radius: 0.5 } }, // Toronto
@@ -23,6 +24,8 @@ function Home() {
   const [system, setSystem] = useState(null);
   const [manual, setManual] = useState(false);
   const [geoError, setGeoError] = useState(null);
+  const [origin, setOrigin] = useState(null);
+  const [destination, setDestination] = useState(null);
 
   useEffect(() => {
     fetch('/api/health')
@@ -41,7 +44,20 @@ function Home() {
     setManual(true);
   };
 
-  if (system) return <div>Detected system: {system}</div>;
+  if (system) {
+    return (
+      <div>
+        <div>Detected system: {system}</div>
+        <StopSelector
+          system={system}
+          origin={origin}
+          setOrigin={setOrigin}
+          destination={destination}
+          setDestination={setDestination}
+        />
+      </div>
+    );
+  }
   if (manual)
     return (
       <div>
