@@ -34,12 +34,12 @@ describe('StopSelector repopulates on system change', () => {
         <App />
       </MemoryRouter>
     );
-    // Select GO Transit
+    // Select GO Transit by typing (direct replacement)
     const systemInput = await screen.findByLabelText(/transit system search/i);
     await userEvent.clear(systemInput);
     await userEvent.type(systemInput, 'GO Transit');
-    const goOption = await screen.findByText('GO Transit');
-    await userEvent.click(goOption);
+    // System is selected as soon as input matches, so dropdown is gone
+    expect(systemInput.value).toBe('GO Transit');
     // Wait for stops to load and input to appear
     await waitFor(async () => {
       const originInput = await screen.findByLabelText(/origin stop/i);
@@ -54,8 +54,7 @@ describe('StopSelector repopulates on system change', () => {
     const systemInput2 = await screen.findByLabelText(/transit system search/i);
     await userEvent.clear(systemInput2);
     await userEvent.type(systemInput2, 'TTC');
-    const ttcOption = await screen.findByText('TTC');
-    await userEvent.click(ttcOption);
+    expect(systemInput2.value).toBe('TTC');
     // Wait for stops to load and input to reappear
     await waitFor(async () => {
       const originInput2 = await screen.findByLabelText(/origin stop/i);

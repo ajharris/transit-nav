@@ -13,21 +13,14 @@ function StopSelector({ system, origin, setOrigin, destination, setDestination }
     if (!system) return;
     setLoading(true);
     setError(null);
-    // Fetch all stops, then filter by system in the frontend
-    fetch('/api/stops')
+    // Always fetch stops for the selected system only
+    fetch(`/api/stops?system=${encodeURIComponent(system)}`)
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch stops');
         return res.json();
       })
       .then(data => {
-        // Filter stops by system name
-        let filtered = data;
-        if (system === 'GO Transit') {
-          filtered = data.filter(stop => stop.system === 'GO Transit');
-        } else if (system === 'TTC') {
-          filtered = data.filter(stop => stop.system === 'TTC');
-        }
-        setStops(Array.isArray(filtered) ? filtered : []);
+        setStops(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch(() => {
