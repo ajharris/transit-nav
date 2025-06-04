@@ -36,13 +36,14 @@ function StopSelector({ system, origin, setOrigin, destination, setDestination }
   return (
     <div>
       {loading && <div>Loading stops...</div>}
-      {error && <div style={{ color: 'red' }}>{error}</div>}
+      {error && <div className="text-danger">{error}</div>}
       {!loading && !error && (
         <>
-          <div>
-            <label htmlFor="origin-input">Origin Stop</label>
+          <div className="mb-3 position-relative">
+            <label htmlFor="origin-input" className="form-label">Origin Stop</label>
             <input
               id="origin-input"
+              className="form-control"
               value={originQuery || (origin && origin.name) || ''}
               placeholder="Select origin stop"
               onFocus={() => setOriginListOpen(true)}
@@ -53,12 +54,12 @@ function StopSelector({ system, origin, setOrigin, destination, setDestination }
               autoComplete="off"
             />
             {originListOpen && (
-              <ul style={{ border: '1px solid #ccc', maxHeight: 150, overflowY: 'auto', background: 'white', position: 'absolute', zIndex: 1 }}>
+              <ul className="list-group position-absolute w-100 z-2" style={{ maxHeight: 150, overflowY: 'auto' }}>
                 {filterStops(originQuery).map(stop => (
                   <li key={stop.id}>
                     <button
                       type="button"
-                      style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: 4 }}
+                      className="list-group-item list-group-item-action"
                       onClick={() => {
                         setOrigin(stop);
                         setOriginQuery(stop.name);
@@ -66,18 +67,19 @@ function StopSelector({ system, origin, setOrigin, destination, setDestination }
                       }}
                       disabled={destination && destination.id === stop.id}
                     >
-                      {stop.name} {destination && destination.id === stop.id && '(Already selected as destination)'}
+                      {stop.name} {destination && destination.id === stop.id && <span className="text-muted">(Already selected as destination)</span>}
                     </button>
                   </li>
                 ))}
-                {filterStops(originQuery).length === 0 && <li>No stops found</li>}
+                {filterStops(originQuery).length === 0 && <li className="list-group-item">No stops found</li>}
               </ul>
             )}
           </div>
-          <div style={{ marginTop: 32 }}>
-            <label htmlFor="destination-input">Destination Stop</label>
+          <div className="mb-3 position-relative">
+            <label htmlFor="destination-input" className="form-label">Destination Stop</label>
             <input
               id="destination-input"
+              className="form-control"
               value={destinationQuery || (destination && destination.name) || ''}
               placeholder="Select destination stop"
               onFocus={() => setDestinationListOpen(true)}
@@ -88,12 +90,12 @@ function StopSelector({ system, origin, setOrigin, destination, setDestination }
               autoComplete="off"
             />
             {destinationListOpen && (
-              <ul style={{ border: '1px solid #ccc', maxHeight: 150, overflowY: 'auto', background: 'white', position: 'absolute', zIndex: 1 }}>
+              <ul className="list-group position-absolute w-100 z-2" style={{ maxHeight: 150, overflowY: 'auto' }}>
                 {filterStops(destinationQuery).map(stop => (
                   <li key={stop.id}>
                     <button
                       type="button"
-                      style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: 4 }}
+                      className="list-group-item list-group-item-action"
                       onClick={() => {
                         setDestination(stop);
                         setDestinationQuery(stop.name);
@@ -101,15 +103,15 @@ function StopSelector({ system, origin, setOrigin, destination, setDestination }
                       }}
                       disabled={origin && origin.id === stop.id}
                     >
-                      {stop.name} {origin && origin.id === stop.id && '(Already selected as origin)'}
+                      {stop.name} {origin && origin.id === stop.id && <span className="text-muted">(Already selected as origin)</span>}
                     </button>
                   </li>
                 ))}
-                {filterStops(destinationQuery).length === 0 && <li>No stops found</li>}
+                {filterStops(destinationQuery).length === 0 && <li className="list-group-item">No stops found</li>}
               </ul>
             )}
           </div>
-          <div style={{ marginTop: 32 }}>
+          <div className="mb-3">
             <strong>Selected:</strong>
             <div>Origin: {origin ? origin.name : <em>None</em>}</div>
             <div>Destination: {destination ? destination.name : <em>None</em>}</div>

@@ -145,3 +145,28 @@ it('system selector is accessible', async () => {
   expect(screen.getByRole('button', { name: /GO Transit/i })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /TTC/i })).toBeInTheDocument();
 });
+
+describe('Bootstrap layout and responsive classes', () => {
+  it('main container uses Bootstrap classes', () => {
+    render(<MemoryRouter><App /></MemoryRouter>);
+    const container = document.querySelector('.container');
+    expect(container).toBeInTheDocument();
+    expect(container.className).toMatch(/container/);
+  });
+
+  it('uses Bootstrap grid and button classes when system is selected', async () => {
+    render(<MemoryRouter><App /></MemoryRouter>);
+    // Simulate user selecting a system to reveal StopSelector and buttons
+    const systemButton = await screen.findByRole('button', { name: /GO Transit/i });
+    fireEvent.click(systemButton);
+    // Focus the origin input to trigger the dropdown (list-group)
+    const originInput = await screen.findByLabelText(/origin stop/i);
+    fireEvent.focus(originInput);
+    // Now check for Bootstrap classes
+    expect(document.querySelector('.row')).toBeInTheDocument();
+    expect(document.querySelector('.col-12')).toBeInTheDocument();
+    expect(document.querySelector('.btn')).toBeInTheDocument();
+    expect(document.querySelector('.form-control')).toBeInTheDocument();
+    expect(document.querySelector('.list-group')).toBeInTheDocument();
+  });
+});

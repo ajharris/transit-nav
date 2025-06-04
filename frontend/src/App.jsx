@@ -79,68 +79,75 @@ function Home() {
   };
 
   return (
-    <div>
-      <TransitSystemSelector onSelect={sys => {
-        setSystem(sys);
-        setOrigin(null);
-        setDestination(null);
-        setGeoError(null);
-        setManual(false);
-      }} />
-      {system && (
-        <>
-          <div>Detected system: {system} <button style={{marginLeft:8}} onClick={() => {
-            setSystem(null);
+    <div className="container py-4">
+      <div className="row justify-content-center">
+        <div className="col-12 col-md-8 col-lg-6">
+          <TransitSystemSelector onSelect={sys => {
+            setSystem(sys);
             setOrigin(null);
             setDestination(null);
-          }}>Change System</button></div>
-          <StopSelector
-            key={system} // force remount on system change
-            system={system}
-            origin={origin}
-            setOrigin={setOrigin}
-            destination={destination}
-            setDestination={setDestination}
-          />
-          <button
-            onClick={handleTripConfirm}
-            disabled={!origin || !destination}
-            style={{ marginTop: 16 }}
-          >
-            Confirm Trip
-          </button>
-          <ResultsDisplay result={result} />
-        </>
-      )}
-      {geoError && <div role="alert">{geoError}</div>}
-      <RecentTripsSection recentTrips={recentTrips} onTripClick={trip => {
-        setOrigin({ name: trip.start });
-        setDestination({ name: trip.destination });
-      }} />
-      {origin && destination && system && (
-        <ResultsDisplay
-          origin={origin}
-          destination={destination}
-          system={system}
-        />
-      )}
+            setGeoError(null);
+            setManual(false);
+          }} />
+          {system && (
+            <>
+              <div className="my-3 d-flex align-items-center">
+                <span>Detected system: {system}</span>
+                <button className="btn btn-outline-secondary btn-sm ms-2" onClick={() => {
+                  setSystem(null);
+                  setOrigin(null);
+                  setDestination(null);
+                }}>Change System</button>
+              </div>
+              <StopSelector
+                key={system}
+                system={system}
+                origin={origin}
+                setOrigin={setOrigin}
+                destination={destination}
+                setDestination={setDestination}
+              />
+              <button
+                className="btn btn-primary w-100 my-3"
+                onClick={handleTripConfirm}
+                disabled={!origin || !destination}
+              >
+                Confirm Trip
+              </button>
+              <ResultsDisplay result={result} />
+            </>
+          )}
+          {geoError && <div className="alert alert-danger mt-3" role="alert">{geoError}</div>}
+          <RecentTripsSection recentTrips={recentTrips} onTripClick={trip => {
+            setOrigin({ name: trip.start });
+            setDestination({ name: trip.destination });
+          }} />
+          {origin && destination && system && (
+            <ResultsDisplay
+              origin={origin}
+              destination={destination}
+              system={system}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
 
 function RecentTripsSection({ recentTrips, onTripClick }) {
-  if (!recentTrips.length) return <div style={{ marginTop: 32 }}>No recent trips</div>;
+  if (!recentTrips.length) return <div className="mt-4">No recent trips</div>;
   return (
-    <div style={{ marginTop: 32 }}>
+    <div className="mt-4">
       <strong>Recent Trips</strong>
-      <ul style={{ listStyle: 'none', padding: 0 }}>
+      <ul className="list-unstyled">
         {recentTrips.map((trip, i) => (
-          <li key={i}>
+          <li key={i} className="mb-2">
             <button
-              style={{ background: 'none', border: '1px solid #ccc', margin: 2, padding: 6, borderRadius: 4 }}
+              className="btn btn-outline-secondary btn-sm w-100 text-start"
               onClick={() => onTripClick(trip)}
             >
-              {trip.start} → {trip.destination} <span style={{ color: '#888', fontSize: 12 }}>({new Date(trip.timestamp).toLocaleString()})</span>
+              {trip.start} → {trip.destination} <span className="text-muted small">({new Date(trip.timestamp).toLocaleString()})</span>
             </button>
           </li>
         ))}

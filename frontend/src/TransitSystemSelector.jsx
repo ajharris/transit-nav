@@ -52,11 +52,12 @@ function TransitSystemSelector({ onSelect }) {
   };
 
   return (
-    <div role="region" aria-label="System selector" style={{ position: 'relative', maxWidth: 320 }}>
-      <h2 id="system-select-label">Select your transit system</h2>
-      <div style={{ position: 'relative' }} ref={inputRef}>
+    <div className="mb-4" role="region" aria-label="System selector">
+      <h2 id="system-select-label" className="h5 mb-2">Select your transit system</h2>
+      <div className="position-relative" ref={inputRef}>
         <input
           type="text"
+          className="form-control mb-1"
           placeholder="Type or select a system"
           value={query}
           onChange={e => {
@@ -66,7 +67,6 @@ function TransitSystemSelector({ onSelect }) {
           onFocus={() => setDropdownOpen(true)}
           onKeyDown={handleKeyDown}
           aria-label="Transit system search"
-          style={{ width: '100%', padding: 8, marginBottom: 4 }}
           autoComplete="off"
           role="combobox"
           aria-expanded={dropdownOpen}
@@ -77,7 +77,8 @@ function TransitSystemSelector({ onSelect }) {
           <ul
             id="system-listbox"
             role="listbox"
-            style={{ border: '1px solid #ccc', background: 'white', position: 'absolute', width: '100%', zIndex: 2, maxHeight: 150, overflowY: 'auto', margin: 0, padding: 0, listStyle: 'none' }}
+            className="list-group position-absolute w-100 z-2"
+            style={{ maxHeight: 150, overflowY: 'auto' }}
           >
             {filtered.length > 0 ? (
               filtered.map(sys => (
@@ -86,7 +87,7 @@ function TransitSystemSelector({ onSelect }) {
                     type="button"
                     role="button"
                     aria-label={sys.name}
-                    style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: 8 }}
+                    className="list-group-item list-group-item-action"
                     onClick={() => {
                       onSelect(sys.name);
                       setQuery(sys.name);
@@ -98,12 +99,12 @@ function TransitSystemSelector({ onSelect }) {
                 </li>
               ))
             ) : (
-              <li style={{ padding: 8, color: '#888' }} role="option">
+              <li role="option">
                 <button
                   type="button"
                   role="button"
                   aria-label={query}
-                  style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', color: '#888' }}
+                  className="list-group-item list-group-item-action text-muted"
                   onClick={() => {
                     onSelect(query);
                     setDropdownOpen(false);
