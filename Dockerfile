@@ -20,5 +20,8 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 WORKDIR /workspaces/transit-nav/frontend
 RUN npm install
 
+# Ensure frontend/src/ResultsDisplay.jsx is included in the build context (handled by default in COPY and build steps)
+# No changes needed for ResultsDisplay.jsx specifically
+
 # Set default working directory
 WORKDIR /workspaces/transit-nav

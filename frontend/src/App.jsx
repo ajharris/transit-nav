@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import LocationDetector from './LocationDetector.jsx';
 import TransitSystemSelector from './TransitSystemSelector.jsx';
 import StopSelector from './StopSelector.jsx';
+import ResultsDisplay from './ResultsDisplay';
 import { getRecentTrips, saveTrip } from './recentTrips';
 
 const SUPPORTED_SYSTEMS = [
@@ -28,6 +29,7 @@ function Home() {
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
   const [recentTrips, setRecentTrips] = useState([]);
+  const [result, setResult] = useState(null);
 
   useEffect(() => {
     fetch('/api/health')
@@ -36,6 +38,18 @@ function Home() {
       .catch(() => setStatus('error'));
     setRecentTrips(getRecentTrips());
   }, []);
+
+  useEffect(() => {
+    if (origin && destination && system) {
+      // Fetch optimal car location from backend
+      fetch(`/api/best_car?origin=${encodeURIComponent(origin.name)}&destination=${encodeURIComponent(destination.name)}&system=${encodeURIComponent(system)}`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => setResult(data))
+        .catch(() => setResult(null));
+    } else {
+      setResult(null);
+    }
+  }, [origin, destination, system]);
 
   // Proxy API requests to backend on port 5000
   // Vite config: add this to vite.config.js
@@ -95,6 +109,7 @@ function Home() {
           >
             Confirm Trip
           </button>
+          <ResultsDisplay result={result} />
         </>
       )}
       {geoError && <div role="alert">{geoError}</div>}
@@ -102,6 +117,13 @@ function Home() {
         setOrigin({ name: trip.start });
         setDestination({ name: trip.destination });
       }} />
+      {origin && destination && system && (
+        <ResultsDisplay
+          origin={origin}
+          destination={destination}
+          system={system}
+        />
+      )}
     </div>
   );
 }
