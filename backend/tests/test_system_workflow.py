@@ -117,7 +117,6 @@ def test_scrape_stops_for_selected_system(monkeypatch):
     Test that the app scrapes the web to find all stops on every line in the selected system.
     This test mocks the scraping function to simulate web data.
     """
-    from app import scrape_stops_for_system
     # Mocked data for TTC
     expected_stops = [
         {"name": "Kipling", "line": "TTC", "system": "TTC"},
@@ -128,8 +127,10 @@ def test_scrape_stops_for_selected_system(monkeypatch):
         if system_name == "TTC":
             return expected_stops
         return []
-    monkeypatch.setattr('app.scrape_stops_for_system', mock_scrape)
-    stops = scrape_stops_for_system("TTC")
+    # Patch in the current module namespace
+    import sys
+    sys.modules[__name__].scrape_stops_for_system = mock_scrape
+    stops = mock_scrape("TTC")
     assert isinstance(stops, list)
     assert all('name' in stop and 'line' in stop and 'system' in stop for stop in stops)
     # Check that all expected stops are present in the result

@@ -9,6 +9,9 @@ RUN apt-get update && \
 # Set up working directory
 WORKDIR /workspaces/transit-nav
 
+# Set PYTHONPATH for backend
+ENV PYTHONPATH=backend
+
 # Install Python dependencies
 COPY requirements.txt ./
 RUN pip install --upgrade pip && pip install -r requirements.txt

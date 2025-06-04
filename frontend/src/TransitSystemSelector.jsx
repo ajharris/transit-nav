@@ -31,6 +31,26 @@ function TransitSystemSelector({ onSelect }) {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
+  // Direct system selection if input matches a supported system
+  useEffect(() => {
+    const match = SUPPORTED_SYSTEMS.find(sys => sys.name.toLowerCase() === query.trim().toLowerCase());
+    if (match) {
+      onSelect(match.name);
+      setQuery(match.name); // ensure input is normalized
+      setDropdownOpen(false);
+    }
+    // eslint-disable-next-line
+  }, [query]);
+
+  // If only one filtered result and user presses Enter, select it
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && filtered.length === 1) {
+      onSelect(filtered[0].name);
+      setQuery(filtered[0].name);
+      setDropdownOpen(false);
+    }
+  };
+
   return (
     <div role="region" aria-label="System selector" style={{ position: 'relative', maxWidth: 320 }}>
       <h2 id="system-select-label">Select your transit system</h2>
@@ -44,6 +64,7 @@ function TransitSystemSelector({ onSelect }) {
             setDropdownOpen(true);
           }}
           onFocus={() => setDropdownOpen(true)}
+          onKeyDown={handleKeyDown}
           aria-label="Transit system search"
           style={{ width: '100%', padding: 8, marginBottom: 4 }}
           autoComplete="off"
