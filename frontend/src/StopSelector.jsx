@@ -24,8 +24,8 @@ function StopSelector({ system, origin, setOrigin, destination, setDestination }
         setLoading(false);
       })
       .catch(() => {
+        setError('failed to fetch stops');
         setStops([]);
-        setError('Could not load stops');
         setLoading(false);
       });
   }, [system]);

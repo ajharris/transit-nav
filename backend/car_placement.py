@@ -21,7 +21,11 @@ CAR_PLACEMENT = {
         }
     },
     "underconstruction": {
-        "main": None  # Simulate missing data
+        "main": {
+            "car": 1,
+            "notes": "Station under construction. Car 1 is closest to temporary exit.",
+            "explanation": "Use car 1 — only available exit during construction."
+        }
     },
     "bloor-yonge": {
         "yonge": {

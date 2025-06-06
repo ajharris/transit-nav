@@ -6,12 +6,12 @@ import StopSelector from './StopSelector.jsx';
 import ResultsDisplay from './ResultsDisplay';
 import { getRecentTrips, saveTrip } from './recentTrips';
 
-const SUPPORTED_SYSTEMS = [
+export const SUPPORTED_SYSTEMS = [
   { name: 'GO Transit', region: { lat: 43.65, lon: -79.38, radius: 0.5 } }, // Toronto
   { name: 'TTC', region: { lat: 43.7, lon: -79.4, radius: 0.2 } }, // Example
 ];
 
-function getSystemForCoords(lat, lon) {
+export function getSystemForCoords(lat, lon) {
   for (const sys of SUPPORTED_SYSTEMS) {
     const d = Math.sqrt(
       Math.pow(lat - sys.region.lat, 2) + Math.pow(lon - sys.region.lon, 2)
