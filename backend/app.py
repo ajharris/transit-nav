@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from models import db, Stop, TransitSystem, Line
+from backend.models import db, Stop, TransitSystem, Line
 from scraping import scrape_stops_for_system
 from car_placement import CAR_PLACEMENT, normalize_station_name
 import os

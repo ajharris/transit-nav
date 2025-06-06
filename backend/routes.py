@@ -1,5 +1,5 @@
 from flask import request, jsonify, send_from_directory
-from models import db, Stop, TransitSystem, Line
+from backend import models
 from scraping import scrape_stops_for_system
 from car_placement import CAR_PLACEMENT, normalize_station_name
 import os
@@ -64,19 +64,19 @@ def register_routes(app):
                 scraped = [s for s in scraped if line.lower() in s['line'].lower()]
             return jsonify(scraped), 200
         # Fallback: use DB for legacy/dev/demo
-        if Stop.query.count() == 0:
-            db.session.add_all([
-                Stop(name="Union Station", line="GO", system="GO Transit", lat=43.645, lon=-79.380),
-                Stop(name="Kipling", line="TTC", system="TTC", lat=43.636, lon=-79.535),
-                Stop(name="Yorkdale", line="TTC", system="TTC", lat=43.724, lon=-79.454),
-                Stop(name="Oakville", line="GO", system="GO Transit", lat=43.450, lon=-79.682),
+        if models.Stop.query.count() == 0:
+            models.db.session.add_all([
+                models.Stop(name="Union Station", line="GO", system="GO Transit", lat=43.645, lon=-79.380),
+                models.Stop(name="Kipling", line="TTC", system="TTC", lat=43.636, lon=-79.535),
+                models.Stop(name="Yorkdale", line="TTC", system="TTC", lat=43.724, lon=-79.454),
+                models.Stop(name="Oakville", line="GO", system="GO Transit", lat=43.450, lon=-79.682),
             ])
-            db.session.commit()
-        query = Stop.query
+            models.db.session.commit()
+        query = models.Stop.query
         if name:
-            query = query.filter(Stop.name.ilike(f"%{name}%"))
+            query = query.filter(models.Stop.name.ilike(f"%{name}%"))
         if line:
-            query = query.filter(Stop.line.ilike(f"%{line}%"))
+            query = query.filter(models.Stop.line.ilike(f"%{line}%"))
         stops = query.all()
         # Add 'location' key to each stop
         return jsonify([
