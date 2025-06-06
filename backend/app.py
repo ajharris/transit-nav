@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from backend.models import db, Stop, TransitSystem, Line
 from backend.scraping import scrape_stops_for_system
-from car_placement import CAR_PLACEMENT, normalize_station_name
+from backend.car_placement import CAR_PLACEMENT, normalize_station_name
 import os
 import requests
 from bs4 import BeautifulSoup
