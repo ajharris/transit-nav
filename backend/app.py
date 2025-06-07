@@ -7,7 +7,7 @@ from backend.car_placement import CAR_PLACEMENT, normalize_station_name
 import os
 import requests
 from bs4 import BeautifulSoup
-from routes import register_routes
+from backend.routes import register_routes
 
 def create_app(testing=False):
     app = Flask(__name__, static_folder='../frontend/build', static_url_path='')
