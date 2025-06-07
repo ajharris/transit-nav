@@ -1,7 +1,7 @@
 from flask import request, jsonify, send_from_directory
 from backend import models
-from scraping import scrape_stops_for_system
-from car_placement import CAR_PLACEMENT, normalize_station_name
+from backend.scraping import scrape_stops_for_system
+from backend.car_placement import CAR_PLACEMENT, normalize_station_name
 import os
 
 def register_routes(app):
