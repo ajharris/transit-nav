@@ -54,3 +54,5 @@ def create_app(testing=False):
 
     app.add_transit_system_with_scrape = add_transit_system_with_scrape
     return app
+
+app = create_app()
