@@ -51,6 +51,16 @@ def create_app(testing=False):
         return system
 
     app.add_transit_system_with_scrape = add_transit_system_with_scrape
+
+    # Serve React frontend for all non-API routes
+    from flask import send_from_directory
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve_react_app(path):
+        if path != '' and os.path.exists(os.path.join(app.static_folder, path)):
+            return send_from_directory(app.static_folder, path)
+        return send_from_directory(app.static_folder, 'index.html')
+
     return app
 
 app = create_app()
