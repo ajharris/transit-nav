@@ -54,6 +54,10 @@ def create_app(testing=False):
 
     # Serve React frontend for all non-API routes
     from flask import send_from_directory
+    @app.errorhandler(404)
+    def not_found(e):
+        return send_from_directory(app.static_folder, 'index.html')
+
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve_react_app(path):
