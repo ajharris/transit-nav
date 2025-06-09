@@ -12,8 +12,14 @@ from backend.routes import register_routes
 
 def create_app(testing=False):
     static_folder = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'frontend', 'build')
+    
+    # Use DATABASE_URL from environment if available (Heroku Postgres), else fallback to SQLite
+    db_url = os.environ.get('DATABASE_URL')
+    if db_url and db_url.startswith('postgres://'):
+        db_url = db_url.replace('postgres://', 'postgresql://', 1)
+        
     app = Flask(__name__, static_folder=static_folder, static_url_path='')
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///transitnav.db' if not testing else 'sqlite:///:memory:'
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_url or 'sqlite:///transitnav.db' if not testing else 'sqlite:///:memory:'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
     migrate = Migrate(app, db)
