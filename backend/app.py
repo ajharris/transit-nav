@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from backend.routes import register_routes
 
 def create_app(testing=False):
-    app = Flask(__name__, static_folder='../frontend/build', static_url_path='')
+    app = Flask(__name__, static_folder='frontend/build', static_url_path='')
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///transitnav.db' if not testing else 'sqlite:///:memory:'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
