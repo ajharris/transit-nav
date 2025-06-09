@@ -21,6 +21,7 @@
   "scripts": {
     "test": "jest",
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "heroku-postbuild": "npm run build"
   }
 }
