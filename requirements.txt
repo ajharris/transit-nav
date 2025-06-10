@@ -35,7 +35,7 @@ gitdb==4.0.12
 GitPython==3.1.44
 greenlet==3.2.2
 gunicorn==23.0.0
-h11>=0.13,<0.15
+h11>=0.13,<0.17
 httpcore==1.0.7
 httpx==0.28.1
 idna==3.10
@@ -102,7 +102,7 @@ PyYAML==6.0.2
 pyzmq==26.3.0
 psycopg2-binary
 referencing==0.36.2
-requests==2.32.3
+requests==2.32.4
 rfc3339-validator==0.1.4
 rfc3986-validator==0.1.1
 rpds-py==0.23.1
